@@ -33,6 +33,15 @@ resource "aws_subnet" "private_subnet" {
     vpc_id = aws_vpc.mysql_vpc.id
     cidr_block = "10.0.2.0/24"
 }
+resource "aws_subnet" "private_subnet2" {
+    vpc_id = aws_vpc.mysql_vpc.id
+    cidr_block = "10.0.3.0/24"
+}
+
+resource "aws_subnet" "private_subnet3" {
+    vpc_id = aws_vpc.mysql_vpc.id
+    cidr_block = "10.0.4.0/24"
+}
 
 # Create an internet gateway and attach it to the VPC
 resource "aws_internet_gateway" "mysql_gateway" {
@@ -61,7 +70,7 @@ resource "aws_route_table_association" "mysql_public_association" {
 resource "aws_db_subnet_group" "example" {
   name        = "example-db-subnet-group"
   description = "Subnet group for the RDS instance"
-  subnet_ids  = [aws_subnet.private_subnet.id]
+  subnet_ids  = ["${aws_subnet.private.*.id}"]
 }
 
 # Create a security group for the RDS instance
