@@ -139,7 +139,7 @@ resource "aws_lambda_function" "example" {
   role             = aws_iam_role.lambda_exec.arn
   handler          = "main.handler"
   source_code_hash = filebase64sha256("example.zip")
-  runtime          = "python3.8"
+  runtime          = "go1.x"
   timeout          = 60
   memory_size      = 128
 
