@@ -137,7 +137,7 @@ resource "aws_iam_policy" "lambda_policy" {
         Sid = "AllowSSMGetParameters",
         Effect = "Allow",
         Action = [
-          "ssm:GetParameters"
+          "ssm:GetParameter"
         ],
         Resource = [
           aws_ssm_parameter.rds_password.arn, aws_ssm_parameter.rds_master_user.arn
@@ -186,7 +186,7 @@ resource "aws_lambda_function" "example" {
       RDS_HOST     = aws_db_instance.mysqldb.address
       RDS_USERNAME_SSM_KEY =  aws_ssm_parameter.rds_master_user.name
       RDS_PASSWORD_SSM_KEY = aws_ssm_parameter.rds_password.name
-      KMS_KEY = aws_kms_key.mysqlkey.name
+      KMS_KEY = aws_kms_key.mysqlkey.arn
     }
   }
 }
