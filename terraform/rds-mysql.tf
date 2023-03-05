@@ -90,8 +90,12 @@ resource "aws_db_instance" "mysqldb" {
   password             = aws_ssm_parameter.rds_password.value
   parameter_group_name = "default.mysql5.7"
   skip_final_snapshot  = true
-  subnet_group_name     = aws_db_subnet_group.example.name
+  db_subnet_group_name     = aws_db_subnet_group.example.name
   vpc_security_group_ids = [aws_security_group.rds_sg.id]
+  
+  tags = {
+    Name = "example-db-instance"
+  }
 }
 
 
@@ -131,7 +135,7 @@ resource "aws_lambda_function" "example" {
   # Set environment variables to provide the RDS connection information
   environment {
     variables = {
-      RDS_HOST     = aws_db_instance.example.address
+      RDS_HOST     = aws_db_instance.mysqldb.address
       RDS_USERNAME = var.mysqluser
       RDS_PASSWORD = aws_ssm_parameter.rds_password.value
     }
@@ -153,10 +157,9 @@ resource "aws_cloudwatch_event_rule" "example" {
   description = "Trigger Lambda function on schedule"
 
   schedule_expression = "cron(0 12 * * ? *)"
+}
 
-  # Trigger the Lambda function when the CloudWatch event occurs
-  target {
-    arn = aws_lambda_function.example.arn
-    id  = "example-target-id"
-  }
+resource "aws_cloudwatch_event_target" "example_target" {
+  rule  = "${aws_cloudwatch_event_rule.example.name}"
+  arn   = "${aws_lambda_function.example.arn}"
 }
