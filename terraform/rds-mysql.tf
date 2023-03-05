@@ -19,7 +19,7 @@ resource "aws_ssm_parameter" "rds_password" {
 }
 
 # Save the username to SSM Parameter Store with KMS encryption
-resource "aws_ssm_parameter" "rds_password" {
+resource "aws_ssm_parameter" "rds_master_user" {
   name      = "/rds/mysql/masterusername"
   type      = "SecureString"
   value     = var.mysqluser
@@ -156,7 +156,7 @@ resource "aws_lambda_function" "example" {
   environment {
     variables = {
       RDS_HOST     = aws_db_instance.mysqldb.address
-      RDS_USERNAME = var.mysqluser
+      RDS_USERNAME =  aws_ssm_parameter.rds_master_user.name
       RDS_PASSWORD = aws_ssm_parameter.rds_password.name
     }
   }
