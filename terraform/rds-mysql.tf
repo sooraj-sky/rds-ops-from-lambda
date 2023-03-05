@@ -117,24 +117,8 @@ resource "aws_db_instance" "mysqldb" {
     Name = "example-db-instance"
   }
 }
-
-
-resource "aws_iam_role" "lambda_exec" {
-  name = "lambda-exec-role"
-
-  assume_role_policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [
-      {
-        Action = "sts:AssumeRole"
-        Effect = "Allow"
-        Principal = {
-          Service = "lambda.amazonaws.com"
-        }
-      }
-    ]
-  })
-
+resource "aws_iam_policy" "lambda_policy" {
+  name        = "lambda_policy"
   # Add the IAM policy to the execution role
   policy = jsonencode({
     Version = "2012-10-17",
@@ -163,6 +147,28 @@ resource "aws_iam_role" "lambda_exec" {
   })
 }
 
+resource "aws_iam_role" "lambda_exec" {
+  name = "lambda-exec-role"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Action = "sts:AssumeRole"
+        Effect = "Allow"
+        Principal = {
+          Service = "lambda.amazonaws.com"
+        }
+      }
+    ]
+  })
+
+  tags = {
+    Owner       = "example"
+  }
+}
+
+
 # Create a Lambda function
 resource "aws_lambda_function" "example" {
   filename         = "example.zip"
@@ -182,6 +188,11 @@ resource "aws_lambda_function" "example" {
       RDS_PASSWORD_SSM_KEY = aws_ssm_parameter.rds_password.name
     }
   }
+}
+
+resource "aws_iam_role_policy_attachment" "lambda_policy_attachment" {
+  policy_arn = aws_iam_policy.lambda_policy.arn
+  role       = aws_iam_role.lambda_exec.name
 }
 
 # Grant the Lambda function permission to access the RDS instance
