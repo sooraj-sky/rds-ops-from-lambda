@@ -18,6 +18,15 @@ resource "aws_ssm_parameter" "rds_password" {
   overwrite = true
 }
 
+# Save the username to SSM Parameter Store with KMS encryption
+resource "aws_ssm_parameter" "rds_password" {
+  name      = "/rds/mysql/masterusername"
+  type      = "SecureString"
+  value     = var.mysqluser
+  key_id    = aws_kms_key.mysqlkey.key_id
+  overwrite = true
+}
+
 # Create a new VPC
 resource "aws_vpc" "mysql_vpc" {
   cidr_block = "10.0.0.0/16"
@@ -148,7 +157,7 @@ resource "aws_lambda_function" "example" {
     variables = {
       RDS_HOST     = aws_db_instance.mysqldb.address
       RDS_USERNAME = var.mysqluser
-      RDS_PASSWORD = aws_ssm_parameter.rds_password.value
+      RDS_PASSWORD = aws_ssm_parameter.rds_password.name
     }
   }
 }
