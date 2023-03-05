@@ -127,7 +127,8 @@ resource "aws_iam_policy" "lambda_policy" {
         Sid = "AllowKMSDecrypt",
         Effect = "Allow",
         Action = [
-          "kms:Decrypt"
+          "kms:Decrypt",
+          "kms:DescribeKey"
         ],
         Resource = [
           aws_kms_key.mysqlkey.arn
