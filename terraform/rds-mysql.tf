@@ -135,11 +135,33 @@ resource "aws_iam_role" "lambda_exec" {
     ]
   })
 
-  tags = {
-    Owner       = "example"
-  }
+  # Add the IAM policy to the execution role
+  policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Sid = "AllowKMSDecrypt",
+        Effect = "Allow",
+        Action = [
+          "kms:Decrypt"
+        ],
+        Resource = [
+          aws_kms_key.mysqlkey.arn
+        ]
+      },
+      {
+        Sid = "AllowSSMGetParameters",
+        Effect = "Allow",
+        Action = [
+          "ssm:GetParameters"
+        ],
+        Resource = [
+          aws_ssm_parameter.rds_password.arn, aws_ssm_parameter.rds_master_user.arn
+        ]
+      }
+    ]
+  })
 }
-
 
 # Create a Lambda function
 resource "aws_lambda_function" "example" {
@@ -156,8 +178,8 @@ resource "aws_lambda_function" "example" {
   environment {
     variables = {
       RDS_HOST     = aws_db_instance.mysqldb.address
-      RDS_USERNAME =  aws_ssm_parameter.rds_master_user.name
-      RDS_PASSWORD = aws_ssm_parameter.rds_password.name
+      RDS_USERNAME_SSM_KEY =  aws_ssm_parameter.rds_master_user.name
+      RDS_PASSWORD_SSM_KEY = aws_ssm_parameter.rds_password.name
     }
   }
 }
