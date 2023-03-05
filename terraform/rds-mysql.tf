@@ -70,7 +70,7 @@ resource "aws_route_table_association" "mysql_public_association" {
 resource "aws_db_subnet_group" "example" {
   name        = "example-db-subnet-group"
   description = "Subnet group for the RDS instance"
-  subnet_ids  = ["${aws_subnet.private.*.id}"]
+  subnet_ids  = ["${aws_subnet.private_subnet.*.id}"]
 }
 
 # Create a security group for the RDS instance
