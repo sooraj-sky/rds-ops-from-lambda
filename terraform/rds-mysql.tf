@@ -186,6 +186,7 @@ resource "aws_lambda_function" "example" {
       RDS_HOST     = aws_db_instance.mysqldb.address
       RDS_USERNAME_SSM_KEY =  aws_ssm_parameter.rds_master_user.name
       RDS_PASSWORD_SSM_KEY = aws_ssm_parameter.rds_password.name
+      KMS_KEY = aws_kms_key.mysqlkey.name
     }
   }
 }
