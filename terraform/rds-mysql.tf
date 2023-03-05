@@ -162,15 +162,10 @@ resource "aws_lambda_permission" "example" {
   source_arn    = aws_cloudwatch_event_rule.example.arn
 }
 
-# Create a CloudWatch event rule to trigger the Lambda function
-resource "aws_cloudwatch_event_rule" "example" {
-  name        = "example-event-rule"
-  description = "Trigger Lambda function on schedule"
-
-  schedule_expression = "cron(0 12 * * ? *)"
-}
-
-resource "aws_cloudwatch_event_target" "example_target" {
-  rule  = "${aws_cloudwatch_event_rule.example.name}"
-  arn   = "${aws_lambda_function.example.arn}"
+resource "aws_lambda_invocation" "example" {
+  function_name = aws_lambda_function.example.function_name
+  input        = jsonencode({
+    "key1" = "value1"
+    "key2" = "value2"
+  })
 }
