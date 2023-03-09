@@ -101,6 +101,13 @@ resource "aws_security_group" "rds_sg" {
 resource "aws_security_group" "lambda_sg" {
   name_prefix = "lambda-mysql-"
   vpc_id      = aws_vpc.mysql_vpc.id
+    egress {
+    from_port        = 0
+    to_port          = 0
+    protocol         = "-1"
+    cidr_blocks      = ["0.0.0.0/0"]
+    ipv6_cidr_blocks = ["::/0"]
+  }
 }
 
 # Create an RDS instance using the password retrieved from SSM
@@ -117,7 +124,7 @@ resource "aws_db_instance" "mysqldb" {
   parameter_group_name = "default.mysql5.7"
   skip_final_snapshot  = true
   db_subnet_group_name     = aws_db_subnet_group.example.name
-  vpc_security_group_ids = [aws_security_group.rds_sg.id]
+  vpc_security_group_ids = [aws_security_group.rds_sg.id, aws_security_group.lambda_sg.id]
   
   tags = {
     Name = "example-db-instance"
