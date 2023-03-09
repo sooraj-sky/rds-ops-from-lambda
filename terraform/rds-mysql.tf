@@ -169,8 +169,19 @@ resource "aws_iam_policy" "lambda_policy" {
         Resource = [
           "*"
         ]
-
-
+      },
+      {
+    
+        Sid = "AlowLogs",
+        Effect = "Allow",
+        Action = [       
+          "logs:CreateLogStream",
+          "logs:PutLogEvents"
+          ],
+        Resource = [
+          "arn:aws:logs:*:*:*"
+        ]
+      
       }
       
     ]
@@ -240,6 +251,14 @@ resource "aws_lambda_permission" "example" {
   action        = "lambda:InvokeFunction"
   function_name = aws_lambda_function.example.function_name
   principal     = "events.amazonaws.com"
+}
+
+resource "aws_cloudwatch_log_group" "function_log_group" {
+  name              = "/aws/lambda/${aws_lambda_function.example.function_name}"
+  retention_in_days = 7
+  lifecycle {
+    prevent_destroy = false
+  }
 }
 
 # resource "aws_lambda_invocation" "example" {
