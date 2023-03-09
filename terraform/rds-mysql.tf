@@ -181,11 +181,12 @@ resource "aws_lambda_function" "example" {
   filename         = "example.zip"
   function_name    = "example-function"
   role             = aws_iam_role.lambda_exec.arn
-  handler          = "main.handler"
+  handler          = "main"
   source_code_hash = filebase64sha256("example.zip")
   runtime          = "go1.x"
   timeout          = 60
   memory_size      = 128
+
 
   # connect to VPC
   vpc_config {
@@ -218,10 +219,10 @@ resource "aws_lambda_permission" "example" {
   principal     = "events.amazonaws.com"
 }
 
-resource "aws_lambda_invocation" "example" {
-  function_name = aws_lambda_function.example.function_name
-  input        = jsonencode({
-    "key1" = "value1"
-    "key2" = "value2"
-  })
-}
+# resource "aws_lambda_invocation" "example" {
+#   function_name = aws_lambda_function.example.function_name
+#   input        = jsonencode({
+#     "key1" = "value1"
+#     "key2" = "value2"
+#   })
+# }
