@@ -149,7 +149,23 @@ resource "aws_iam_policy" "lambda_policy" {
         Resource = [
           aws_ssm_parameter.rds_password.arn, aws_ssm_parameter.rds_master_user.arn
         ]
+      },
+      {
+        Sid = "AllowKMSDecrypt",
+        Effect = "Allow",
+        Action = [       
+        "ec2:DescribeNetworkInterfaces",
+        "ec2:CreateNetworkInterface",
+        "ec2:DeleteNetworkInterface",
+        "ec2:DescribeInstances",
+        "ec2:AttachNetworkInterface"],
+        Resource = [
+          "*"
+        ]
+
+
       }
+      
     ]
   })
 }
