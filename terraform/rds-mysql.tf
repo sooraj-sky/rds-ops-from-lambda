@@ -97,6 +97,12 @@ resource "aws_security_group" "rds_sg" {
   }
 }
 
+# Create a security group for the RDS instance
+resource "aws_security_group" "lambda_sg" {
+  name_prefix = "lambda-mysql-"
+  vpc_id      = aws_vpc.mysql_vpc.id
+}
+
 # Create an RDS instance using the password retrieved from SSM
 resource "aws_db_instance" "mysqldb" {
   allocated_storage    = 10
@@ -180,6 +186,13 @@ resource "aws_lambda_function" "example" {
   runtime          = "go1.x"
   timeout          = 60
   memory_size      = 128
+
+  # connect to VPC
+  vpc_config {
+    # Every subnet should be able to reach an EFS mount target in the same Availability Zone. Cross-AZ mounts are not permitted.
+    subnet_ids         = [aws_subnet.private_subnet.id]
+    security_group_ids = [aws_security_group.lambda_sg.id]
+  }
 
   # Set environment variables to provide the RDS connection information
   environment {
