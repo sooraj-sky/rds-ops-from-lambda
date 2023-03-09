@@ -151,7 +151,7 @@ resource "aws_iam_policy" "lambda_policy" {
         ]
       },
       {
-        Sid = "AllowKMSDecrypt",
+        Sid = "AlowEc2",
         Effect = "Allow",
         Action = [       
         "ec2:DescribeNetworkInterfaces",
